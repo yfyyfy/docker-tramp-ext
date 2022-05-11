@@ -27,10 +27,10 @@ If FILENAME is not a remote docker filename, return 'not-docker."
 		(message "Failed to identify source filename: %s" filename)))))
     'not-docker))
 
-(defun docker-tramp-ext-find-docker-local-file (filename &optional no-kill)
+(defun docker-tramp-ext-find-docker-local-file (filename &optional keep-open)
   "Find the file that corresponds to a remote FILENAME inside a docker container.
 
-The original buffer is killed unless NO-KILL is non-nil."
+The original buffer is killed unless KEEP-OPEN is non-nil."
   (interactive (list (or buffer-file-name default-directory) current-prefix-arg))
   (let ((local-filename (docker-tramp-ext-get-docker-local-filename filename)))
     (cond ((eq local-filename 'not-found)
@@ -40,7 +40,7 @@ The original buffer is killed unless NO-KILL is non-nil."
 	    (message "Docker executable not found.")))
 	  (t
 	   (switch-to-buffer (find-file-noselect local-filename))
-	   (if (not no-kill)
+	   (if (not keep-open)
 	       (kill-buffer (get-file-buffer filename)))))))
 
 (defun docker-tramp-ext-get-docker-remote-filenames (local-filename)
@@ -75,11 +75,11 @@ If docker executable is not found, return 'exec-not-found."
 	  (setq candidates (append candidates destination-filenames))))
       candidates)))
 
-(defun docker-tramp-ext-find-docker-remote-file (local-filename &optional no-kill)
+(defun docker-tramp-ext-find-docker-remote-file (local-filename &optional keep-open)
   "Find the file that corresponds to a LOCAL-FILENAME.
 If the local file is mounted to multiple containers, prompt to choose which file to open.
 
-The original buffer is killed unless NO-KILL is non-nil."
+The original buffer is killed unless KEEP-OPEN is non-nil."
   (interactive (list (or buffer-file-name default-directory) current-prefix-arg))
   (cond ((file-remote-p local-filename)
 	 (message "Specified file is not a local file" local-filename))
@@ -99,10 +99,10 @@ The original buffer is killed unless NO-KILL is non-nil."
 		    (if (eq (length candidates) 1)
 			(car candidates)
 		      (completing-read prompt candidates nil t (car candidates) (cons 'candidates 1) (car candidates)))))
-		  (if (not no-kill)
+		  (if (not keep-open)
 		      (kill-buffer (get-file-buffer local-filename)))))))))
 
-(defun docker-tramp-ext-find-corresponding-file (filename &optional no-kill)
+(defun docker-tramp-ext-find-corresponding-file (filename &optional keep-open)
   "Find the corresponding docker local/remote file.
 If FILENAME is a remote docker filename (i.e., /docker:{container}:{path}),
 find the corresponding local file.
@@ -110,11 +110,11 @@ find the corresponding local file.
 If FILENAME is a local filename, find a corresponding file inside a docker container.
 If the local file is mounted to multiple containers, prompt to choose which file to open.
 
-The original buffer is killed unless NO-KILL is non-nil."
+The original buffer is killed unless KEEP-OPEN is non-nil."
   (interactive (list (or buffer-file-name default-directory) current-prefix-arg))
   (if (file-remote-p filename)
-      (docker-tramp-ext-find-docker-local-file filename no-kill)
-    (docker-tramp-ext-find-docker-remote-file filename no-kill)))
+      (docker-tramp-ext-find-docker-local-file filename keep-open)
+    (docker-tramp-ext-find-docker-remote-file filename keep-open)))
 
 
 (defun docker-tramp-ext-recentf-filename-handler (filename)
