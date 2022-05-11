@@ -11,4 +11,5 @@
 ## Usage
 
 Use <kbd>M-x docker-tramp-ext-find-corresponding-file</kbd> to open the corresponding local/remote file of the current buffer.  
-To keep the original buffer, use <kbd>C-u M-x docker-tramp-ext-find-corresponding-file</kbd>.
+To keep the original buffer, use <kbd>C-u M-x docker-tramp-ext-find-corresponding-file</kbd>.  
+To keep the original buffer and leave the point on the new buffer unchanged, use <kbd>C-u C-u M-x docker-tramp-ext-find-corresponding-file</kbd>.
